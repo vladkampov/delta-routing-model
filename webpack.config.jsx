@@ -7,7 +7,7 @@ webpackConfig = {
     context: __dirname,
     entry: {
         bundle: './src/jsx/app.jsx',
-        styles: './src/scss/main.scss'
+        styles: './src/less/main.less'
     },
     output: {
         filename: '[name].js',
@@ -27,8 +27,8 @@ webpackConfig = {
                 }
             },
             {
-                test: /\.scss$/,
-                loader: ExtractTextPlugin.extract('style-loader', 'css-loader!resolve-url!sass-loader?sourceMap')
+                test: /\.less$/,
+                loader: ExtractTextPlugin.extract('style-loader', 'css-loader!resolve-url!less-loader')
             },
             {
                 test: /\.css$/,
