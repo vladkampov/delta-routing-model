@@ -28,6 +28,10 @@ export default class GlobalNetwork {
                     var randomWeight = _.POSSIBLE_WEIGHTS[_.random(0, _.POSSIBLE_WEIGHTS.length)];
                     var from = _.random(i * 10, _.REGIONAL_NETWORK_SIZE);
                     var to = _.random(i * 10, _.REGIONAL_NETWORK_SIZE);
+                    for (var obj of connections) {
+                        if ((obj.from == from && obj.to == to) || (obj.to == from && obj.from == to))
+                            return
+                    }
                     if (from != to)
                         connections.push(new Connection(randomWeight, from, to, i));
                 });

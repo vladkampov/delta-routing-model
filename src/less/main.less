@@ -1,6 +1,43 @@
 @import '~bootstrap/less/bootstrap.less';
 
 #app {
-	height: 100vh;
-	background: @gray;
+    height: 100vh;
+    background: #212121;
+}
+
+.vis-manipulation, .menu {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 150px;
+
+    .vis-button, a {
+        .btn;
+
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border-radius: 0;
+        display: block;
+        width: 100%;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .vis-label {
+            white-space: normal;
+        }
+    }
+}
+
+.menu {
+    top: initial;
+    bottom: 0;
+    left: initial;
+    z-index: 999;
+    right: 0;
+    width: 200px;
+    a:focus {
+        color: white;
+    }
 }

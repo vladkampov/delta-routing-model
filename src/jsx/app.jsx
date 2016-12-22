@@ -1,10 +1,5 @@
 import vis, { Network, DataSet } from 'vis';
-import {
-  POSSIBLE_WEIGHTS, 
-  REGIONAL_NETWORKS_NUMBER, 
-  REGIONAL_NETWORK_SIZE, 
-  AVERAGE_NODE_POWER
-} from './variables';
+import  * as _ from './variables';
 import GlobalNetwork from './components/GlobalNetwork';
 
 var network = new GlobalNetwork();
@@ -26,56 +21,93 @@ var options = {
   edges: {
     selectionWidth: 4,
     width: 2,
+    font: {
+        size: 22
+    },
   },
   interaction:{
      hover: true,
   },
   physics: false,
-  //
-  // TODO: implement manipulations
-  //
-  // manipulation: {
-  //   initiallyActive: true,
-  //   addNode: function (data, callback) {
-  //     data.id = currentID;
-  //     data.label = data.id;
+  manipulation: {
+    enabled: true,
+    initiallyActive: true,
+    addNode: (data, callback) => {
+      data.id = network.nodes.length;
+      data.label = network.nodes.length;
+      data.routing_table = {};
+      data.group = _.REGIONAL_NETWORKS_NUMBER - 1;
+      data.color = "rgb(132,213,246)";
 
-  //     // Refill dropdown lists in "Send message" menu
-  //     $("#from").append($("<option />").val(data.id + 1).text(data.id + 1));
-  //     $("#to").append($("<option />").val(data.id + 1).text(data.id + 1));
+      network.nodes.push(data);
+      localStorage.setItem('nodes', JSON.stringify(network.nodes));
+      callback(data);
+    },
+    addEdge: (data, callback) => {
+      if (data.from == data.to) {
+        alert("You can't connect the node to itself");
+        callback(null);
+        return
+      }
+      data.weight = _.POSSIBLE_WEIGHTS[_.random(0, _.POSSIBLE_WEIGHTS.length)];;
+      data.label = data.weight;
+      data.dashes = Boolean(Math.round(Math.random()));
 
-  //     currentID++;
-  //     callback(data)
-  //   },
-  //   addEdge: function (data, callback) {
-  //     // filling in the popup DOM elements
-  //     if (data.from == data.to) {
-  //       alert("You can't connect the node to itself");
-  //       callback(null);
-  //       return
-  //     }
-  //     $.post('/add-connection', data, function(connection){
-  //       callback(connection);              
-  //     });
-  //   },
-  //   deleteEdge: function (data, callback) {
-  //     $.ajax({
-  //       url: '/delete-elements',
-  //       data: data,
-  //       type: 'DELETE'
-  //     });
-  //     callback(data)
-  //   },
-  //   deleteNode: function (data, callback) {
-  //     $.ajax({
-  //       url: '/delete-elements',
-  //       data: data,
-  //       type: 'DELETE'
-  //     });
-  //     callback(data)
-  //   },
-  //   editEdge: false,
-  // }
+      network.connections.push(data);
+
+      localStorage.setItem('connections', JSON.stringify(network.connections));
+      callback(data);
+    },
+    deleteEdge: (data, callback) => {
+      var iter = 0;
+      var tmp = -1;
+
+      for (var node of network.connections) {
+        if (data.edges[0] === node.id) {
+          tmp = iter;
+          break;
+        }
+        iter++;
+      }
+
+      if (tmp >= 0)
+        network.connections.splice(tmp, 1);
+
+      localStorage.setItem('connections', JSON.stringify(network.connections));
+      callback(data)
+    },
+    deleteNode: (data, callback) => {
+      var iter = 0;
+      var tmp = -1;
+
+      for (var node of network.nodes) {
+        if (data.nodes[0] === node.id) {
+          tmp = iter;
+          break;
+        }
+        iter++;
+      }
+
+      if (tmp >= 0)
+        network.nodes.splice(tmp, 1);
+
+      for (var edge of data.edges) {
+        iter = 0;
+        for (var connection of network.connections) {
+          if (edge === connection.id) {
+            network.connections.splice(iter, 1);
+            break;
+          }
+          iter++;
+        }
+      }
+
+      localStorage.setItem('nodes', JSON.stringify(network.nodes));
+      localStorage.setItem('connections', JSON.stringify(network.connections));
+      callback(data)
+    },
+    editEdge: false,
+  }
 };
 
 // initialize your network!
@@ -104,3 +136,12 @@ networkView.on("doubleClick", (data) => {
   }
 });
 
+document.getElementById('generateNetwork').onclick = (e) => {
+  e.preventDefault();
+  localStorage.removeItem('nodes');
+  localStorage.removeItem('connections');
+  network = new GlobalNetwork();
+  nodes = new DataSet(network.nodes);
+  edges = new DataSet(network.connections);
+  networkView.setData({nodes: nodes, edges: edges});
+}
