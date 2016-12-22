@@ -31,48 +31,51 @@ var options = {
      hover: true,
   },
   physics: false,
-  manipulation: {
-    initiallyActive: true,
-    addNode: function (data, callback) {
-      data.id = currentID;
-      data.label = data.id;
+  //
+  // TODO: implement manipulations
+  //
+  // manipulation: {
+  //   initiallyActive: true,
+  //   addNode: function (data, callback) {
+  //     data.id = currentID;
+  //     data.label = data.id;
 
-      // Refill dropdown lists in "Send message" menu
-      $("#from").append($("<option />").val(data.id + 1).text(data.id + 1));
-      $("#to").append($("<option />").val(data.id + 1).text(data.id + 1));
+  //     // Refill dropdown lists in "Send message" menu
+  //     $("#from").append($("<option />").val(data.id + 1).text(data.id + 1));
+  //     $("#to").append($("<option />").val(data.id + 1).text(data.id + 1));
 
-      currentID++;
-      callback(data)
-    },
-    addEdge: function (data, callback) {
-      // filling in the popup DOM elements
-      if (data.from == data.to) {
-        alert("You can't connect the node to itself");
-        callback(null);
-        return
-      }
-      $.post('/add-connection', data, function(connection){
-        callback(connection);              
-      });
-    },
-    deleteEdge: function (data, callback) {
-      $.ajax({
-        url: '/delete-elements',
-        data: data,
-        type: 'DELETE'
-      });
-      callback(data)
-    },
-    deleteNode: function (data, callback) {
-      $.ajax({
-        url: '/delete-elements',
-        data: data,
-        type: 'DELETE'
-      });
-      callback(data)
-    },
-    editEdge: false,
-  }
+  //     currentID++;
+  //     callback(data)
+  //   },
+  //   addEdge: function (data, callback) {
+  //     // filling in the popup DOM elements
+  //     if (data.from == data.to) {
+  //       alert("You can't connect the node to itself");
+  //       callback(null);
+  //       return
+  //     }
+  //     $.post('/add-connection', data, function(connection){
+  //       callback(connection);              
+  //     });
+  //   },
+  //   deleteEdge: function (data, callback) {
+  //     $.ajax({
+  //       url: '/delete-elements',
+  //       data: data,
+  //       type: 'DELETE'
+  //     });
+  //     callback(data)
+  //   },
+  //   deleteNode: function (data, callback) {
+  //     $.ajax({
+  //       url: '/delete-elements',
+  //       data: data,
+  //       type: 'DELETE'
+  //     });
+  //     callback(data)
+  //   },
+  //   editEdge: false,
+  // }
 };
 
 // initialize your network!
@@ -81,9 +84,23 @@ var networkView = new Network(container, {
     edges: edges
 }, options);
 
-const doubleClickHandler = (a) => {
-  console.log(a, "lal")
-}
+networkView.on("doubleClick", (data) => {
+  if (data.nodes.length) {
+    // click on node
+    // TODO: open modal
+    console.log(network.getObject(data.nodes[0], 'nodes'));
+  } else if (data.edges.length == 1) {
+    // click on edge
+    
+    var connection = network.getObject(data.edges[0], 'connections');
+    network.changeObjectAttribute(data.edges[0], 'connections', 'dashes', !connection.dashes);    
 
-networkView.on("doubleClick", doubleClickHandler);
+    // updating view
+    var tempObj = {
+      nodes: new DataSet(network.nodes),
+      edges: new DataSet(network.connections)
+    };
+    networkView.setData(tempObj);
+  }
+});
 

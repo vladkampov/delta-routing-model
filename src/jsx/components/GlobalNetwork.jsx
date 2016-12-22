@@ -56,4 +56,28 @@ export default class GlobalNetwork {
 
         return this;
     }
+
+    getObject = (id, type) => {
+        if (id) {
+            for (var obj of this[type]) {
+                if (id === obj.id) {
+                    return(obj);
+                }
+            }
+        } else
+            return null;
+    }
+
+
+    changeObjectAttribute = (id, type, attributeName, value) => {
+        if (id) {
+            for (var obj of this[type]) {
+                if (id === obj.id) {
+                    obj[attributeName] = value;
+                    return(obj);
+                }
+            }
+        } else
+            return null;
+    }
 }
