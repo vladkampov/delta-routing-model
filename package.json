@@ -21,6 +21,7 @@
   "homepage": "https://github.com/vladkampov/delta-routing-model#readme",
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1",
     "vis": "^4.17.0"
   },
   "devDependencies": {

@@ -35,7 +35,7 @@ var options = {
     addNode: (data, callback) => {
       data.id = network.nodes.length;
       data.label = network.nodes.length;
-      data.routing_table = {};
+      data.routingTable = [];
       data.group = _.REGIONAL_NETWORKS_NUMBER - 1;
       data.color = "rgb(132,213,246)";
 
@@ -119,8 +119,19 @@ var networkView = new Network(container, {
 networkView.on("doubleClick", (data) => {
   if (data.nodes.length) {
     // click on node
-    // TODO: open modal
-    console.log(network.getObject(data.nodes[0], 'nodes'));
+
+    console.log(network.getRoutingTable(data.nodes[0]));
+    $("#routing-table").empty();
+    $("#routing-table-title").text("Routing table for node " + data.nodes[0]);
+
+    $("#routing-table").append("<tr><td><b>" + 'N' + "</b></td>" + 
+      "<td>" + "minimal path" + "</td>" + 
+      "<td>" + "cost" + "</td>" + 
+      "<td>" + "min transaction path" + "</td>" +
+      "<td>" + "min transaction cost" + "</td></tr>");
+    
+
+    $('#routing-table-modal').modal('toggle');
   } else if (data.edges.length == 1) {
     // click on edge
     

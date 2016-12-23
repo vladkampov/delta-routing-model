@@ -84,4 +84,40 @@ export default class GlobalNetwork {
         } else
             return null;
     }
+
+    findPath = (currentId, targetId, path = []) => {
+        // TODO: check recursion
+        // TODO: write only minimal path
+        for (var connection of this.connections) {
+            if (connection.from == currentId) {
+                if (path.indexOf(connection.to) == -1) {
+                    path.push(currentId);
+                    if (connection.to == targetId) {
+                        path.push(connection.to);
+                        break;
+                    } else {
+                        this.findPath(connection.to, targetId, path);
+                    }
+                } 
+            }
+            // else if (connection.to == currentId) {
+            //     path.push(currentId);
+            //     if (connection.from == targetId) {
+            //         path.push(connection.from);
+            //         break;
+            //     }
+            //     this.findPath(connection.from, targetId, path);
+            // }
+        }
+
+        return path;
+    }
+
+    getRoutingTable = (id) => {
+        var node = this.getObject(id, 'nodes');
+        var target = 17;
+
+        // find all connections with from == id
+        return this.findPath(id, target);
+    }
 }

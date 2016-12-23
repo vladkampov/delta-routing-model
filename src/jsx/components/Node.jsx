@@ -10,7 +10,7 @@ export default class Node {
         this.id = id;
         this.label = "" + id;
         this.group = network_id;
-        this.routing_table = {};
+        this.routingTable = [];
         this.color = (() => {
           switch (network_id) {
             case 0: return "rgb(172,222,133)";
